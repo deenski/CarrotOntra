@@ -10,14 +10,23 @@ dt = 0
 
 pygame.display.set_caption("CarrotOntra")
 BASE_IMAGES_PATH = "assets/images"
+bg_imgs = []
 
-# TODO: loop through this shit and add them to an array, then blit each item in the array
-bg_img_layer_1 = pygame.image.load(f"{BASE_IMAGES_PATH}/bg_forest_layers/bg_forest_a.png").convert()
-bg_img_layer_2 = pygame.image.load(f"{BASE_IMAGES_PATH}/bg_forest_layers/bg_forest_b.png").convert_alpha()
-bg_img_layer_3 = pygame.image.load(f"{BASE_IMAGES_PATH}/bg_forest_layers/bg_forest_c.png").convert_alpha()
-bg_img_layer_2_x = 0
-bg_img_layer_3_x = 0
-bg_img_y = 0
+# game variables
+scroll = 0
+
+for i in range(3):
+    bg_img = pygame.image.load(f"{BASE_IMAGES_PATH}/bg_forest_layers/bg_forest_{i}.png").convert_alpha()
+    logging.info(bg_img.__dir__)
+    bg_imgs.append(bg_img)
+
+bg_width = bg_imgs[0].get_width()
+
+
+def draw_bg():
+    for x in range(3):
+        for img in bg_imgs:
+            screen.blit(img, ((x * bg_width), 0))
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
@@ -29,11 +38,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.blit(bg_img_layer_1, (0,0))
-    screen.blit(bg_img_layer_2, (bg_img_layer_2_x, bg_img_y))
-    screen.blit(bg_img_layer_3, (bg_img_layer_3_x, bg_img_y))
-    
+    # draw background images to screen
+    draw_bg()
 
     pygame.draw.circle(screen, "yellow", player_pos, 40)
 
