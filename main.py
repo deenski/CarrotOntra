@@ -1,12 +1,22 @@
 # Example file showing a circle moving on screen
+import logging
+
 import pygame
 
+# setup logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='game.log', level=logging.DEBUG)
+
+
 # pygame setup
+logging.info("initializing pygame")
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
 dt = 0
+logging.info("pygame initialized")
+logging.info("loading assets")
 
 pygame.display.set_caption("CarrotOntra")
 BASE_IMAGES_PATH = "assets/images"
@@ -17,6 +27,7 @@ scroll = 0
 
 for i in range(3):
     bg_img = pygame.image.load(f"{BASE_IMAGES_PATH}/bg_forest_layers/bg_forest_{i}.png").convert_alpha()
+    logging.info(bg_img.__dir__)
     bg_imgs.append(bg_img)
 
 bg_width = bg_imgs[0].get_width()
@@ -28,7 +39,8 @@ def draw_bg():
             screen.blit(img, ((x * bg_width), 0))
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-
+logging.info("assets loaded")
+logging.info("starting game")
 while running:
     screen.fill((0,0,0))
     # poll for events
@@ -37,7 +49,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # draw background images to screen
+    # fill the screen with a color to wipe away anything from last frame
     draw_bg()
 
     pygame.draw.circle(screen, "yellow", player_pos, 40)
@@ -61,3 +73,5 @@ while running:
     dt = clock.tick(60) / 1000
 
 pygame.quit()
+logging.info("game shut down gracefully")
+logging.info("-------------------------")
