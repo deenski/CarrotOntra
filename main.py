@@ -17,7 +17,6 @@ scroll = 0
 
 for i in range(3):
     bg_img = pygame.image.load(f"{BASE_IMAGES_PATH}/bg_forest_layers/bg_forest_{i}.png").convert_alpha()
-    logging.info(bg_img.__dir__)
     bg_imgs.append(bg_img)
 
 bg_width = bg_imgs[0].get_width()
