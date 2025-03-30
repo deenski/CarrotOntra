@@ -1,8 +1,10 @@
 # Example file showing a circle moving on screen
 import logging
+import sys
 
 import pygame
 
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_RIGHT, K_LEFT, K_UP, K_DOWN 
 # setup logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -31,7 +33,40 @@ logging.info("loading assets")
 scroll = 0
 bg_imgs = []
 level_length = 5000
+player_pos = pygame.Vector2(screen.get_width() / 2 + 100, screen.get_height() / 2)
+player = pygame.draw.circle(screen, "black", player_pos, 40)
 
+right = False
+left = False
+up = False
+down = False
+
+def collision_test(rect,tiles):
+    collisions = []
+    for tile in tiles:
+        if rect.colliderect(tile):
+            logging.info("collision detected")
+            collisions.append(tile)
+
+    return collisions
+ 
+
+def move(rect,movement,tiles): # movement = [5,2]
+    rect.x += movement[0]
+    collisions = collision_test(rect,tiles)
+    for tile in collisions:
+        if movement[0] > 0:
+            rect.right = tile.left
+        if movement[0] < 0:
+            rect.left = tile.right
+    rect.y += movement[1]
+    collisions = collision_test(rect,tiles)
+    for tile in collisions:
+        if movement[1] > 0:
+            rect.bottom = tile.top
+        if movement[1] < 0:
+            rect.top = tile.bottom
+    return pygame.draw.circle(screen, "black", (rect.x, rect.y), 40) 
 
 class Tile(pygame.sprite.Sprite):
     # Call the parent class (Sprite) constructor
@@ -84,10 +119,8 @@ def draw_bg():
 
 
 tile = Tile(f"{BASE_IMAGES_PATH}/ground_tile_test.png", 64, 64)
-
 sprite_group = pygame.sprite.Group([tile])
 
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
 logging.info("assets loaded")
 logging.info("starting game")
@@ -105,29 +138,59 @@ while running:
     # draw tile. TODO: not fuck this up
     sprite_group.draw(screen)
 
-    # draw player
-    pygame.draw.circle(screen, "black", player_pos, 40)
-
     # draw tile
     tile.update()
+    movement = [0,0]
+    if right == True:
+        movement[0] += 5
+        if left == True:
+            movement[0] -= 5
+        if up == True:
+            movement[1] -= 5
+        if down == True:
+            movement[1] += 5
 
-    # keypress event handlers
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        player_pos.y -= 300 * dt
-    if keys[pygame.K_s]:
-        player_pos.y += 300 * dt
-    if keys[pygame.K_a] and scroll > 0:
-        if player_pos.x > 500:
-            player_pos.x -= 300 * dt
-            tile.x -= 300 * dt
-        scroll -= 5
-    if keys[pygame.K_d] and scroll < level_length:
-        logger.info("player moving to the right")
-        if player_pos.x < 300:
-            player_pos.x += 300 * dt
-            tile.x += 300 * dt
-        scroll += 5
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == KEYDOWN:
+            if event.key == K_RIGHT:
+                right = True
+            if event.key == K_LEFT:
+                left = True
+            if event.key == K_DOWN:
+                down = True
+            if event.key == K_UP:
+                up = True
+        if event.type == KEYUP:
+            if event.key == K_RIGHT:
+                right = False
+            if event.key == K_LEFT:
+                left = False
+            if event.key == K_DOWN:
+                down = False
+            if event.key == K_UP:
+                up = False  
+
+    # keys = pygame.key.get_pressed()
+    # if keys[pygame.K_w]:
+    #     player_pos.y -= 300 * dt
+    # if keys[pygame.K_s]:
+    #     player_pos.y += 300 * dt
+    # if keys[pygame.K_a] and scroll > 0:
+    #     if player_pos.x > 500:
+    #         player_pos.x -= 300 * dt
+    #         tile.x -= 300 * dt
+    #     scroll -= 5
+    # if keys[pygame.K_d] and scroll < level_length:
+    #     logger.info("player moving to the right")
+    #     if player_pos.x < 300:
+    #         player_pos.x += 300 * dt
+    #         tile.x += 300 * dt
+    #     scroll += 5
+
+    player = move(player,movement,[tile])
 
     # flip() the display to put your work on screen
     pygame.display.flip()
