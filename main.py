@@ -5,7 +5,12 @@ import pygame
 
 # setup logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="game.log", level=logging.DEBUG)
+logging.basicConfig(
+    filename="game.log",
+    level=logging.DEBUG,
+    filemode="w",  # overwrites file
+    format="{%(asctime)s - %(levelname)s - %(message)s}",  # structured logs ftw
+)
 
 # pygame setup
 logging.info("initializing pygame")
@@ -48,13 +53,14 @@ def draw_bg():
         # Assign increasing speed to background layers from back to front
         # 1 * 0 * 0.333 = 0, 1*1*.0333 = .0333 (layer 1),
         # 1*2*.0333 = 0.666 (foreground)
-        speed = 1 + layer_idx * 0.333 # adjust decimal to go faster or slower .1 is slower 0 is stopped
+        # adjust decimal to go faster or slower .1 is slower 0 is stopped
+        speed = 1 + layer_idx * 0.333
 
         # the secret to infinite scrolling is the modulus
         # first loop: (0 * 0) % anything = 0
         # sixth loop: (foreground after 1 keypress): (5 * .666) % 1024 = 3.33
         # 600th loop: (3000 * .666) % 1024 = 974
-        offset = (scroll * speed) % bg_width 
+        offset = (scroll * speed) % bg_width
 
         # Draw tiles
         for x in range(-1, num_tiles):
