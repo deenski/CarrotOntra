@@ -21,6 +21,7 @@ screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
 dt = 0
+movement = [0,0]
 
 pygame.display.set_caption("CarrotOntra")
 
@@ -140,14 +141,13 @@ while running:
 
     # draw tile
     tile.update()
-    movement = [0,0]
-    if right == True:
+    if right:
         movement[0] += 5
-        if left == True:
+        if left:
             movement[0] -= 5
-        if up == True:
+        if up:
             movement[1] -= 5
-        if down == True:
+        if down:
             movement[1] += 5
 
     for event in pygame.event.get():
