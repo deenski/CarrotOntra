@@ -4,7 +4,7 @@ import sys
 
 import pygame
 
-from pygame.locals import QUIT, KEYDOWN, KEYUP, K_RIGHT, K_LEFT, K_UP, K_DOWN 
+from pygame.locals import QUIT, KEYDOWN, KEYUP, K_w, K_s, K_a, K_d 
 # setup logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -144,40 +144,23 @@ while running:
     tile.update()
 
     movement = [0,0]
-    if right:
-        movement[0] += 5
-    if left:
-        movement[0] -= 5
-    if up:
-        movement[1] -= 5
-    if down:
-        movement[1] += 5
  
     player = move(player,movement,[tile])
- 
     pygame.draw.rect(screen,(255,255,255),player)
+
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
         if event.type == KEYDOWN:
-            if event.key == K_RIGHT:
-                right = True
-            if event.key == K_LEFT:
-                left = True
-            if event.key == K_DOWN:
-                down = True
-            if event.key == K_UP:
-                up = True
-        if event.type == KEYUP:
-            if event.key == K_RIGHT:
-                right = False
-            if event.key == K_LEFT:
-                left = False
-            if event.key == K_DOWN:
-                down = False
-            if event.key == K_UP:
-                up = False  
+            if event.key == K_d:
+               movement[0]+=5 
+            if event.key == K_a:
+               movement[0]-=5 
+            if event.key == K_w:
+               movement[1]-=5 
+            if event.key == K_s:
+               movement[1]+=5 
 
     # keys = pygame.key.get_pressed()
     # if keys[pygame.K_w]:
