@@ -34,7 +34,7 @@ logging.info("loading assets")
 scroll = 0
 bg_imgs = []
 level_length = 5000
-player_pos = pygame.Vector2(screen.get_width() / 2 + 100, screen.get_height() / 2)
+player_pos = pygame.Vector2(50, 50)
 player = pygame.draw.circle(screen, "black", player_pos, 40)
 
 right = False
@@ -57,17 +57,17 @@ def move(rect,movement,tiles): # movement = [5,2]
     collisions = collision_test(rect,tiles)
     for tile in collisions:
         if movement[0] > 0:
-            rect.right = tile.left
+            rect.right = tile.rect.left
         if movement[0] < 0:
-            rect.left = tile.right
+            rect.left = tile.rect.right
     rect.y += movement[1]
     collisions = collision_test(rect,tiles)
     for tile in collisions:
         if movement[1] > 0:
-            rect.bottom = tile.top
+            rect.bottom = tile.rect.top
         if movement[1] < 0:
-            rect.top = tile.bottom
-    return pygame.draw.circle(screen, "black", (rect.x, rect.y), 40) 
+            rect.top = tile.rect.bottom
+    return rect 
 
 class Tile(pygame.sprite.Sprite):
     # Call the parent class (Sprite) constructor
@@ -125,6 +125,7 @@ sprite_group = pygame.sprite.Group([tile])
 
 logging.info("assets loaded")
 logging.info("starting game")
+
 while running:
     screen.fill((0, 0, 0))
     # poll for events
@@ -141,15 +142,20 @@ while running:
 
     # draw tile
     tile.update()
+
+    movement = [0,0]
     if right:
         movement[0] += 5
-        if left:
-            movement[0] -= 5
-        if up:
-            movement[1] -= 5
-        if down:
-            movement[1] += 5
-
+    if left:
+        movement[0] -= 5
+    if up:
+        movement[1] -= 5
+    if down:
+        movement[1] += 5
+ 
+    player = move(player,movement,[tile])
+ 
+    pygame.draw.rect(screen,(255,255,255),player)
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -190,7 +196,6 @@ while running:
     #         tile.x += 300 * dt
     #     scroll += 5
 
-    player = move(player,movement,[tile])
 
     # flip() the display to put your work on screen
     pygame.display.flip()
